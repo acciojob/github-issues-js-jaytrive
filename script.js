@@ -1,29 +1,34 @@
 //your code here
-let page=1;
-let heading=document.getElementById('heading');
-let issues=document.getElementById('issues');
-function findIssues() {
-	fetch(`https://api.github.com/repositories/1296269/issues?page=${page}&per_page=5`)
-		.then((res) => res.json())	
-		.then((data) => {
-			issues.innerHTML="";
-			data.forEach(issue => {
-		        const issueItem = document.createElement('li');
-		        issueItem.textContent = issue.title;
-		        issues.appendChild(issueItem);
-		    });
-		});
+const issuesList = document.getElementById('issues-list');
+const pageHeading = document.getElementById('page-heading');
+let currentPageNumber = 1;
+
+function getIssues() {
+  fetch(`https://api.github.com/repositories/1296269/issues?page=${currentPageNumber}&per_page=5`)
+    .then(response => response.json())
+    .then(issues => {
+      issuesList.innerHTML = '';
+      issues.forEach(issue => {
+        const issueItem = document.createElement('li');
+        issueItem.textContent = issue.title;
+        issuesList.appendChild(issueItem);
+      });
+    });
 }
-function showPrev() {
-	if(page>1){
-		page--;
-		heading.innerText=`Page number ${page}`;
-		findIssues();
-	}
-}
-function showNext() {
-	page++;
-	heading.innerText=`Page number ${page}`;
-	findIssues();
-}
+
+getIssues();
+
+document.getElementById('load_next').addEventListener('click', () => {
+  currentPageNumber++;
+  pageHeading.textContent = `Page number ${currentPageNumber}`;
+  getIssues();
+});
+
+document.getElementById('load_prev').addEventListener('click', () => {
+  if (currentPageNumber > 1) {
+    currentPageNumber--;
+    pageHeading.textContent = `Page number ${currentPageNumber}`;
+    getIssues();
+  }
+});
 
